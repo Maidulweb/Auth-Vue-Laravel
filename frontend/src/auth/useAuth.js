@@ -1,5 +1,5 @@
 import axios from "axios";
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 
 const state = reactive({
   authenticated: false,
@@ -7,6 +7,7 @@ const state = reactive({
 });
 
 export default function useAuth() {
+  const errors = ref();
   const getAuthenticate = computed(() => state.authenticated);
   const getUser = computed(() => state.user);
   const setAuthenticate = (authenticated) => {
@@ -30,14 +31,22 @@ export default function useAuth() {
   };
 
   const login = async (credential) => {
-    await axios.get("/sanctum/csrf-cookie");
-    await axios.post("/login", credential);
-    attempt();
+    try {
+      await axios.get("/sanctum/csrf-cookie");
+      await axios.post("/login", credential);
+      await attempt();
+    } catch (e) {
+      if (e.response.status === 422) {
+        errors.value = e.response.data.errors;
+      }
+    }
   };
 
   return {
     login,
     getAuthenticate,
     getUser,
+    attempt,
+    errors,
   };
 }

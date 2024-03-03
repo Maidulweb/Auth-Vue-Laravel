@@ -1,7 +1,5 @@
 <template>
   <div class="pt-40">
-    {{ user }}
-    {{ authenticated }}
     <form class="max-w-md mx-auto" @submit.prevent="login(formData)">
       <div class="relative z-0 w-full mb-5 group">
         <input
@@ -17,6 +15,9 @@
           class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >Email</label
         >
+        <div v-if="errors.email">
+          <p class="text-red-500">{{ errors.email[0] }}</p>
+        </div>
       </div>
       <div class="relative z-0 w-full mb-5 group">
         <input
@@ -32,6 +33,9 @@
           class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >Password</label
         >
+        <div v-if="errors.password">
+          <p class="text-red-500">{{ errors.password[0] }}</p>
+        </div>
       </div>
       <button
         type="submit"
@@ -66,7 +70,12 @@
 <script setup>
 import { reactive } from "vue";
 import useAuth from "../../auth/useAuth";
-const { login, getUser: user, getAuthenticate: authenticated } = useAuth();
+const {
+  login,
+  getUser: user,
+  getAuthenticate: authenticated,
+  errors,
+} = useAuth();
 const formData = reactive({
   email: "",
   password: "",
